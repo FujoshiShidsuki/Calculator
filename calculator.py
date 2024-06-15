@@ -10,23 +10,28 @@ class Calculator:
         self.expression = ""
         self.last_answer = ""
         self.memory = None  # Memory variable
-        self.text_input = tk.StringVar()
+        self.text_input_operations = tk.StringVar()
+        self.text_input_answer = tk.StringVar()
 
         self.create_widgets()
 
     def create_widgets(self):
-        # Entry widget for displaying the expression
-        self.entry = tk.Entry(self.root, textvariable=self.text_input, font=('arial', 20, 'bold'), bd=20, insertwidth=4, width=14, justify='right')
-        self.entry.grid(row=0, column=0, columnspan=4)
+        # Entry widget for displaying the operations
+        self.entry_operations = tk.Entry(self.root, textvariable=self.text_input_operations, font=('arial', 20, 'bold'), bd=20, insertwidth=4, width=14, justify='right')
+        self.entry_operations.grid(row=0, column=0, columnspan=4)
+
+        # Entry widget for displaying the answer
+        self.entry_answer = tk.Entry(self.root, textvariable=self.text_input_answer, font=('arial', 20, 'bold'), bd=20, insertwidth=4, width=14, justify='right')
+        self.entry_answer.grid(row=1, column=0, columnspan=4)
 
         # Buttons layout
         buttons = [
-            ('M+', 1, 0), ('M-', 1, 1), ('MR', 1, 2), ('/', 1, 3),
-            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2), ('*', 2, 3),
-            ('4', 3, 0), ('5', 3, 1), ('6', 3, 2), ('-', 3, 3),
-            ('1', 4, 0), ('2', 4, 1), ('3', 4, 2), ('+', 4, 3),
-            ('0', 5, 0), ('√', 5, 1), ('^', 5, 2), ('.', 5, 3),
-            ('AC', 6, 0), ('Del', 6, 1), ('Ans', 6, 2), ('=', 6, 3)
+            ('M+', 2, 0), ('M-', 2, 1), ('MR', 2, 2), ('.', 2, 3),
+            ('7', 3, 0), ('8', 3, 1), ('9', 3, 2), ('/', 3, 3),
+            ('4', 4, 0), ('5', 4, 1), ('6', 4, 2), ('*', 4, 3),
+            ('1', 5, 0), ('2', 5, 1), ('3', 5, 2), ('-', 5, 3),
+            ('0', 6, 0), ('√', 6, 1), ('^', 6, 2), ('+', 6, 3),
+            ('AC', 7, 0), ('Del', 7, 1), ('Ans', 7, 2), ('=', 7, 3)
         ]
 
         button_width = 4
@@ -45,40 +50,37 @@ class Calculator:
         if char == 'AC':
             self.expression = ""
             self.last_answer = ""
-            self.text_input.set(self.expression)
+            self.update_display()
         elif char == 'Del':
             self.expression = self.expression[:-1]
-            self.text_input.set(self.expression)
+            self.update_display()
         elif char == 'Ans':
             self.expression += self.last_answer
-            self.text_input.set(self.expression)
+            self.update_display()
         elif char == '=':
             try:
                 result = str(eval(self.expression))
                 self.last_answer = result
-                self.text_input.set(result)
+                self.update_display(answer=result)
                 self.expression = result
             except ZeroDivisionError:
                 messagebox.showerror("Error", "Division by Zero!")
-                self.text_input.set("")
-                self.expression = ""
+                self.update_display()
             except Exception as e:
                 messagebox.showerror("Error", "Invalid Input!")
-                self.text_input.set("")
-                self.expression = ""
+                self.update_display()
         elif char == '√':
             try:
                 result = str(math.sqrt(eval(self.expression)))
                 self.last_answer = result
-                self.text_input.set(result)
+                self.update_display(answer=result)
                 self.expression = result
             except Exception as e:
                 messagebox.showerror("Error", "Invalid Input!")
-                self.text_input.set("")
-                self.expression = ""
+                self.update_display()
         elif char == '^':
             self.expression += '**'
-            self.text_input.set(self.expression)
+            self.update_display()
         elif char == 'M+':  # Memory add
             try:
                 self.memory = eval(self.expression)
@@ -94,10 +96,17 @@ class Calculator:
         elif char == 'MR':  # Memory recall
             if self.memory is not None:
                 self.expression += str(self.memory)
-                self.text_input.set(self.expression)
+                self.update_display()
         else:
             self.expression += str(char)
-            self.text_input.set(self.expression)
+            self.update_display()
+
+    def update_display(self, answer=None):
+        self.text_input_operations.set(self.expression)
+        if answer is not None:
+            self.text_input_answer.set(answer)
+        else:
+            self.text_input_answer.set("")
 
 if __name__ == "__main__":
     root = tk.Tk()
