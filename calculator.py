@@ -8,6 +8,7 @@ class Calculator:
         self.root.title("Simple Calculator")
 
         self.expression = ""
+        self.last_answer = ""
         self.text_input = tk.StringVar()
 
         self.create_widgets()
@@ -23,7 +24,8 @@ class Calculator:
             ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
             ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
             ('0', 4, 0), ('.', 4, 1), ('+', 4, 2), ('=', 4, 3),
-            ('C', 5, 0), ('√', 5, 1), ('^', 5, 2), ('M', 5, 3)
+            ('C', 5, 0), ('√', 5, 1), ('^', 5, 2), ('Ans', 5, 3),
+            ('Del', 6, 0), ('AC', 6, 1)
         ]
 
         for (text, row, col) in buttons:
@@ -38,9 +40,20 @@ class Calculator:
         if char == 'C':
             self.expression = ""
             self.text_input.set(self.expression)
+        elif char == 'AC':
+            self.expression = ""
+            self.last_answer = ""
+            self.text_input.set(self.expression)
+        elif char == 'Del':
+            self.expression = self.expression[:-1]
+            self.text_input.set(self.expression)
+        elif char == 'Ans':
+            self.expression += self.last_answer
+            self.text_input.set(self.expression)
         elif char == '=':
             try:
                 result = str(eval(self.expression))
+                self.last_answer = result
                 self.text_input.set(result)
                 self.expression = result
             except ZeroDivisionError:
@@ -54,6 +67,7 @@ class Calculator:
         elif char == '√':
             try:
                 result = str(math.sqrt(eval(self.expression)))
+                self.last_answer = result
                 self.text_input.set(result)
                 self.expression = result
             except Exception as e:
